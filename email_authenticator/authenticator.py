@@ -2,7 +2,7 @@ import uuid
 import email_authenticator.model as model
 import email_authenticator.email_client as email_client
 from functools import wraps
-from flask import g, request, redirect, url_for
+from flask import request
 
 class Authenticator:
 
