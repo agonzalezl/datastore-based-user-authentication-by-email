@@ -1,6 +1,8 @@
 import uuid
 import email_authenticator.model as model
 import email_authenticator.email_client as email_client
+from functools import wraps
+from flask import request
 
 class Authenticator:
 
@@ -37,3 +39,16 @@ class Authenticator:
 
     def _send_email(self, email: str, token: str)->str:
         email_client.send_email(email, html_content=token, subject="Welcome")
+
+    def login_required(self, f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            authorization_header = request.headers.get('authorization')
+            if not authorization_header and not authorization_header.startswith("Bearer "):
+                return "Unauthorized", 401 
+            token = authorization_header.split("Bearer ")[1]
+            fetched_users = model.fetch_user(token=token)
+            if not len(fetched_users) == 1:
+                return "Unauthorized", 401
+            return f(*args, **kwargs, user_data=fetched_users[0])
+        return decorated_function

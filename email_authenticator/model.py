@@ -19,9 +19,10 @@ def store_user(email, token):
 def update_entity(user):
     datastore_client.put(user)
 
-def fetch_user(email: str, token: Optional[str] = None):
+def fetch_user(email: Optional[str] = None, token: Optional[str] = None):
     query = datastore_client.query(kind=TABLE_NAME)
-    query.add_filter("email", "=", email)
-    if token:
+    if email:
         query.add_filter("email", "=", email)
+    if token:
+        query.add_filter("token", "=", token)
     return list(query.fetch())

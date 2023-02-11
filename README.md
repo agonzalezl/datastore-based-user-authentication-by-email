@@ -22,10 +22,15 @@ sender_password='<sender_password>'
 table_name='users'
 auth = Authenticator(email_server, email_address, sender_password, sender_name, table_name)
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def root():
     content = request.json
     auth.sign_up(content['email'])
+    return "ok", 200
+
+@app.route('/resource', methods=['GET'])
+@auth.login_required
+def root():
     return "ok", 200
 
 if __name__ == '__main__':
